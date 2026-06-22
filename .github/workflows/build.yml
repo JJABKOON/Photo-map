@@ -1,0 +1,31 @@
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install -g eas-cli
+      - name: Extract ZIP
+        run: |
+          ZIP=$(find . -name "*.zip" | head -1)
+          unzip -o "$ZIP" -d /tmp/app
+          PROJECT=$(find /tmp/app -name "package.json" -not -path "*/node_modules/*" | head -1 | xargs dirname)
+          echo "PROJECT_DIR=$PROJECT" >> $GITHUB_ENV
+      - name: Install deps
+        run: npm install --legacy-peer-deps
+        working-directory: ${{ env.PROJECT_DIR }}
+      - name: Build APK
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas build --platform android --profile preview --non-interactive
+        working-directory: ${{ env.PROJECT_DIR }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-apk
+          path: '**/*.apk'
