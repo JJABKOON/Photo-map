@@ -10,13 +10,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install -g eas-cli
       - name: Extract ZIP
         run: |
           ZIP=$(find . -name "*.zip" | head -1)
-          unzip -o "$ZIP" -d /tmp/app
-          PROJECT=$(find /tmp/app -name "package.json" -not -path "*/node_modules/*" | head -1 | xargs dirname)
+          unzip -o "$ZIP" -d ./app-source
+          PROJECT=$(find ./app-source -name "package.json" -not -path "*/node_modules/*" | head -1 | xargs dirname)
           echo "PROJECT_DIR=$PROJECT" >> $GITHUB_ENV
+      - name: Git init in project
+        run: |
+          cd ${{ env.PROJECT_DIR }}
+          git init
+          git add .
+          git commit -m "init"
+      - run: npm install -g eas-cli
       - name: Install deps
         run: npm install --legacy-peer-deps
         working-directory: ${{ env.PROJECT_DIR }}
