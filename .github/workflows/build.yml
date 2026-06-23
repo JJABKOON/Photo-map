@@ -31,7 +31,7 @@ jobs:
       - name: EAS init
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas init --id $(eas project:create --non-interactive --json | jq -r '.id') --non-interactive || eas init --non-interactive
+        run: eas init --non-interactive --force
         working-directory: ${{ env.PROJECT_DIR }}
       - name: Build APK
         env:
