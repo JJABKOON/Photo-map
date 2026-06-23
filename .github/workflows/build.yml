@@ -28,6 +28,11 @@ jobs:
       - name: Install deps
         run: npm install --legacy-peer-deps
         working-directory: ${{ env.PROJECT_DIR }}
+      - name: EAS init
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas init --id $(eas project:create --non-interactive --json | jq -r '.id') --non-interactive || eas init --non-interactive
+        working-directory: ${{ env.PROJECT_DIR }}
       - name: Build APK
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
