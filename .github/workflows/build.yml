@@ -18,6 +18,8 @@ jobs:
           echo "PROJECT_DIR=$PROJECT" >> $GITHUB_ENV
       - name: Git init in project
         run: |
+          git config --global user.email "build@github.com"
+          git config --global user.name "GitHub Actions"
           cd ${{ env.PROJECT_DIR }}
           git init
           git add .
